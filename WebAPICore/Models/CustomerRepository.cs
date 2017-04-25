@@ -42,18 +42,17 @@ namespace WebAPICore.Models
         }
 
 
-        public Task<Customer> GetCustomerByIdAsync(int id)
+        public Task<CustomerReport> GetCustomerByIdAsync(int id)
         { 
             #region Just to test
-            //call valued table function (UDF) by FromSql() method
-            var name = "Mark";
-            var temp = _context.Set<Customer>().FromSql("SELECT * FROM dbo.[GetCustomersByName](@p0)", name).ToListAsync();
+            //call valued table function (UDF) by FromSql() method, make sure you changed your DbContext
+            var temp = _context.Set<CustomerReport>().FromSql("SELECT * FROM dbo.[ufnGetCustomerInfomation](@p0)", id).FirstOrDefaultAsync();
             var x = temp.Result;
             //called valued table function (UDF) by my customized method 
             var rs = _context.DynamicDataFromSql<CustomerReport>("select * from ufnGetCustomerInfomation(@id)",
                                 new Dictionary<string, object>() { { "@id", "2" } });
             #endregion
-            return _context.Set<Customer>().FromSql("webapi_GetCustomerById @p0", id).FirstOrDefaultAsync();
+            return _context.Set<CustomerReport>().FromSql("SELECT * FROM dbo.[ufnGetCustomerInfomation](@p0)", id).FirstOrDefaultAsync();
         }
 
 

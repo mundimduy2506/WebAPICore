@@ -111,25 +111,27 @@ namespace WebAPICore.Tests
         
         private List<Customer> GenerateTestCustomers()
         {
-            var customers = new List<Customer>();
-            customers.Add(new Customer()
+            var customers = new List<Customer>
             {
-                EnrolledDate = new DateTime(2017, 4, 10),
-                Id = 1,
-                Name = "Peter"
-            });
-            customers.Add(new Customer()
-            {
-                EnrolledDate = new DateTime(2017, 2, 5),
-                Id = 2,
-                Name = "Mark"
-            });
-            customers.Add(new Customer()
-            {
-                EnrolledDate = new DateTime(2017, 4, 7),
-                Id = 3,
-                Name = "Lindsay"
-            });
+                new Customer()
+                {
+                    EnrolledDate = new DateTime(2017, 4, 10),
+                    Id = 1,
+                    Name = "Peter"
+                },
+                new Customer()
+                {
+                    EnrolledDate = new DateTime(2017, 2, 5),
+                    Id = 2,
+                    Name = "Mark"
+                },
+                new Customer()
+                {
+                    EnrolledDate = new DateTime(2017, 4, 7),
+                    Id = 3,
+                    Name = "Lindsay"
+                }
+            };
             return customers;
         }
     }

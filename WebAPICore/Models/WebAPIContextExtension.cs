@@ -35,6 +35,11 @@ namespace WebAPICore.Models
                     cmd.Parameters.Add(dbParameter);
                 }
 
+                var myReader = cmd.ExecuteReader(CommandBehavior.KeyInfo);
+
+                //Retrieve column schema into a DataTable.
+                var schemaTable = myReader.GetColumnSchema();
+
                 var rs = new List<T>();
                 using (var dataReader = cmd.ExecuteReader())
                 {

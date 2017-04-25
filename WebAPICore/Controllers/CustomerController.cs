@@ -71,12 +71,12 @@ namespace WebAPICore.Controllers
         [Route("id/{id}")]
         public async Task<IActionResult> Get(string id)
         {
-            var response = new SingleModelResponse<Customer>() as ISingleModelResponse<Customer>;
+            var response = new SingleModelResponse<CustomerReport>() as ISingleModelResponse<CustomerReport>;
             try
             {
                 response.Model = await _repo.GetCustomerByIdAsync(Int32.Parse(id));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return BadRequest();
             }

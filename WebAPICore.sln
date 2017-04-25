@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAPICore.IntegrationTest"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebAPICore.Tests", "WebAPICore.Tests\WebAPICore.Tests.csproj", "{5492D885-7821-401E-9A4A-D54CD88C81DF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPEntityGenerator", "SPEntityGenerator\SPEntityGenerator.csproj", "{933F7B08-90CE-4EBD-A8CB-FF8FBB1EA234}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{5492D885-7821-401E-9A4A-D54CD88C81DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5492D885-7821-401E-9A4A-D54CD88C81DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5492D885-7821-401E-9A4A-D54CD88C81DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{933F7B08-90CE-4EBD-A8CB-FF8FBB1EA234}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{933F7B08-90CE-4EBD-A8CB-FF8FBB1EA234}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{933F7B08-90CE-4EBD-A8CB-FF8FBB1EA234}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{933F7B08-90CE-4EBD-A8CB-FF8FBB1EA234}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

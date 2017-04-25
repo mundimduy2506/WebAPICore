@@ -8,19 +8,18 @@ namespace WebAPICore.Tests.Ulities
 {
     public class TestingObject<T> where T : class
     {
-        private Dictionary<Type, object> dependencyMap { get; } = new Dictionary<Type, object>();
+        private Dictionary<Type, object> DependencyMap { get; } = new Dictionary<Type, object>();
 
         public void AddDependency<TDependency>(TDependency dependency)
         {
-            this.dependencyMap.Add(typeof(TDependency), dependency);
+            this.DependencyMap.Add(typeof(TDependency), dependency);
         }
 
         public TDependency GetDependency<TDependency>() where TDependency : class
         {
             Type type = typeof(TDependency);
 
-            object dependency;
-            if (!this.dependencyMap.TryGetValue(type, out dependency))
+            if (!this.DependencyMap.TryGetValue(type, out object dependency))
             {
                 throw new Exception($"Testing object doesn't contain dependency of type {type}.");
             }
@@ -32,7 +31,7 @@ namespace WebAPICore.Tests.Ulities
         {
             IServiceCollection serviceCollection = new ServiceCollection();
 
-            foreach (var dependency in this.dependencyMap)
+            foreach (var dependency in this.DependencyMap)
             {
                 TypeInfo typeInfo = dependency.Key.GetTypeInfo();
 

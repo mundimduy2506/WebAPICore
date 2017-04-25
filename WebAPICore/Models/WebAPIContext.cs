@@ -7,6 +7,7 @@ namespace WebAPICore.Models
     public partial class WebAPIContext : DbContext
     {
         public virtual DbSet<Customer> Customer { get; set; }
+        public virtual DbSet<CustomerReport> CustomerReport { get; set; }
 
         public WebAPIContext(DbContextOptions<WebAPIContext> options)
     : base(options)

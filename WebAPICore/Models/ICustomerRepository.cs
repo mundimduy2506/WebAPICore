@@ -11,7 +11,7 @@ namespace WebAPICore.Models
         Task<List<Customer>> GetCustomersAsync(int pageSize, int pageNumber, DateTime? date);
         Task AddAsync(Customer cus);
         bool IsValidDateFormmat(string date);
-        Task<Customer> GetCustomerByIdAsync(int id);
+        Task<CustomerReport> GetCustomerByIdAsync(int id);
         Task<List<CustomerReport>> GetCustomerDynamicAsync();
     }
 }
