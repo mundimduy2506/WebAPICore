@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WebAPICore\WebAPICore\WebAPICore.csproj" />
+    <ProjectReference Include="..\WebAPICore\WebAPICore.csproj" />
   </ItemGroup>
 
 </Project>
