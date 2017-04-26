@@ -27,7 +27,7 @@ namespace SPEntityGenerator
                     cmd.Parameters.Add(dbParameter);
                 }
 
-                var myReader = cmd.ExecuteReader(CommandBehavior.KeyInfo);
+                var myReader = cmd.ExecuteReader(CommandBehavior.SchemaOnly);
 
                 //Retrieve column schema into a DataTable.
                 return myReader.GetSchemaTable();
