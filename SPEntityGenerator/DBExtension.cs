@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SPEntityGenerator
 {
@@ -18,7 +14,6 @@ namespace SPEntityGenerator
                 cmd.CommandText = sql;
                 if (cmd.Connection.State != ConnectionState.Open)
                     cmd.Connection.Open();
-
                 foreach (KeyValuePair<string, object> param in Parameters)
                 {
                     DbParameter dbParameter = cmd.CreateParameter();
@@ -26,10 +21,7 @@ namespace SPEntityGenerator
                     dbParameter.Value = param.Value;
                     cmd.Parameters.Add(dbParameter);
                 }
-
                 var myReader = cmd.ExecuteReader(CommandBehavior.SchemaOnly);
-
-                //Retrieve column schema into a DataTable.
                 return myReader.GetSchemaTable();
         }
     }

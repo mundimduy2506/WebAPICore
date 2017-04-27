@@ -19,5 +19,6 @@ namespace SPEntityGenerator
         public string AllowDBNull { get; set; }
         public string IsIdentity { get; set; }
         public string DataTypeName { get; set; }
+
     }
 }

@@ -48,13 +48,13 @@
             // 
             // btnGenerate
             // 
-            this.btnGenerate.Location = new System.Drawing.Point(1205, 76);
+            this.btnGenerate.Location = new System.Drawing.Point(581, 1038);
             this.btnGenerate.Name = "btnGenerate";
-            this.btnGenerate.Size = new System.Drawing.Size(100, 32);
+            this.btnGenerate.Size = new System.Drawing.Size(156, 47);
             this.btnGenerate.TabIndex = 0;
-            this.btnGenerate.Text = "Generate";
+            this.btnGenerate.Text = "GENERATE";
             this.btnGenerate.UseVisualStyleBackColor = true;
-            this.btnGenerate.Click += new System.EventHandler(this.btnGenerate_Click);
+            this.btnGenerate.Click += new System.EventHandler(this.BtnGenerate_Click);
             // 
             // dataGridView1
             // 
@@ -66,7 +66,7 @@
             this.dataGridView1.RowTemplate.Height = 28;
             this.dataGridView1.Size = new System.Drawing.Size(1332, 306);
             this.dataGridView1.TabIndex = 1;
-            this.dataGridView1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellClick);
+            this.dataGridView1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridView1_CellClick);
             // 
             // txtConnectionString
             // 
@@ -84,7 +84,7 @@
             this.btnLoad.TabIndex = 3;
             this.btnLoad.Text = "Load SP";
             this.btnLoad.UseVisualStyleBackColor = true;
-            this.btnLoad.Click += new System.EventHandler(this.btnLoad_Click);
+            this.btnLoad.Click += new System.EventHandler(this.BtnLoad_Click);
             // 
             // label1
             // 
@@ -148,7 +148,7 @@
             this.btn_Browse.TabIndex = 10;
             this.btn_Browse.Text = "Browse";
             this.btn_Browse.UseVisualStyleBackColor = true;
-            this.btn_Browse.Click += new System.EventHandler(this.btn_Browse_Click);
+            this.btn_Browse.Click += new System.EventHandler(this.Btn_Browse_Click);
             // 
             // txt_SaveFolder
             // 
@@ -163,15 +163,15 @@
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(8, 140);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(86, 20);
+            this.label3.Size = new System.Drawing.Size(116, 20);
             this.label3.TabIndex = 12;
-            this.label3.Text = "Save Path:";
+            this.label3.Text = "Save Directory:";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1356, 1055);
+            this.ClientSize = new System.Drawing.Size(1356, 1109);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.txt_SaveFolder);
             this.Controls.Add(this.btn_Browse);
