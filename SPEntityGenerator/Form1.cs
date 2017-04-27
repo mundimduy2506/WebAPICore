@@ -4,6 +4,9 @@
  * Status: Incomplete
  * */
 using AutoMapper;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -12,7 +15,11 @@ using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
+using Microsoft.CodeAnalysis.Formatting;
+using Microsoft.CodeAnalysis.MSBuild;
+
 
 namespace SPEntityGenerator
 {
@@ -43,6 +50,7 @@ namespace SPEntityGenerator
             datatypes.Add("System.Int32", "int");
             datatypes.Add("System.UInt32", "unit");
             datatypes.Add("System.Int64", "long");
+            datatypes.Add("System.UInt64", "ulong");
             datatypes.Add("System.Object", "object");
             datatypes.Add("System.Int16", "short");
             datatypes.Add("System.UInt16", "ushort");
@@ -61,6 +69,7 @@ namespace SPEntityGenerator
             SqlConnection cn = new SqlConnection();
             try
             {
+                Cursor.Current = Cursors.WaitCursor;
                 SqlCommand cmd = new SqlCommand();
                 cn.ConnectionString = _connection;
                 cn.Open();
@@ -114,7 +123,7 @@ namespace SPEntityGenerator
                             }
                             listProp.Add(new MapperConfiguration(cfg => { }).CreateMapper().Map<EntityBase>(dataRow));
                         }
-                        WriteClass(listProp);
+                        PrepareContent(listProp);
                         MessageBox.Show("Class is generated.");
                     }
                     else
@@ -253,10 +262,10 @@ namespace SPEntityGenerator
 
         #region additional functions
         /// <summary>
-        /// Write data to file
+        /// Prepare all class content prior writing to file
         /// </summary>
         /// <param name="lst"></param>
-        private void WriteClass(List<EntityBase> lst)
+        private void PrepareContent(List<EntityBase> lst)
         {
             var template = String.Join("\n", File.ReadAllLines("../../Template/ClassTemplate.txt"));
             _namespace = GetType().Namespace;
@@ -275,7 +284,7 @@ namespace SPEntityGenerator
                             ? Type.GetType(item.DataType).Name
                             : datatypes.FirstOrDefault(t => type.Equals(t.Key)).Value;
                 _property.Append("public " + dtype + ("True".Equals(item.AllowDBNull) && !"System.String".Equals(item.DataType) ? "? " : " "))
-                            .Append(item.ColumnName)
+                            .Append(CapitalizeFirstLetter(item.ColumnName))
                             .Append(" { get; set; }\n");
                 isFirst = false;
             }
@@ -283,9 +292,36 @@ namespace SPEntityGenerator
                                 .Replace("<NameSpace>", _namespace)
                                 .Replace("<ClassName>", _classname);
             Directory.CreateDirectory(txt_SaveFolder.Text);
-            File.WriteAllText(String.Format(@"{0}\{1}.cs", txt_SaveFolder.Text, _classname), outstr);
+            var filePath = String.Format(@"{0}\{1}.cs", txt_SaveFolder.Text, _classname);
+
+            // Use Task to call WriteFileToFolder
+            Task.Run(async () =>
+            {
+                await WriteFileToFolder(outstr, filePath);
+            })
+            .GetAwaiter()
+            .GetResult();
 
         }
+
+        /// <summary>
+        /// Use Roslyn to format the source code
+        /// </summary>
+        /// <param name="code"></param>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
+        static async Task WriteFileToFolder(string code, string @filePath)
+        {
+            // Parse the code into a SyntaxTree.
+            var tree = CSharpSyntaxTree.ParseText(code);
+
+            // Get the root CompilationUnitSyntax.
+            var root = await tree.GetRootAsync().ConfigureAwait(false) as CompilationUnitSyntax;
+            var formattedResult = Formatter.Format(root.NormalizeWhitespace(), MSBuildWorkspace.Create());
+            // Write the new file.
+            File.WriteAllText(filePath, formattedResult.ToFullString());
+        }
+
         /// <summary>
         /// Capitalize the first letter of class name to match convention
         /// </summary>
