@@ -4,8 +4,16 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.IO;
 using System.Threading.Tasks;
+using System.Linq;
 using Microsoft.CodeAnalysis.Editing;
 using System.Text;
+using Microsoft.CodeAnalysis.CSharp.Formatting;
+using Microsoft.CodeAnalysis.Formatting;
+using System.Reflection.Metadata;
+using Roslyn.Utilities;
+using Microsoft.CodeAnalysis.LanguageServices;
+using System.Collections.Generic;
+using MyNameSpace;
 
 namespace CodeGenerator
 {
@@ -13,6 +21,7 @@ namespace CodeGenerator
     {
         static void Main(string[] args)
         {
+            
             // Get a workspace
             var workspace = new AdhocWorkspace();
 
@@ -32,12 +41,14 @@ namespace CodeGenerator
 
             // Generate two properties with explicit get/set
             var lastNameProperty = generator.PropertyDeclaration("LastName",
-              generator.TypeExpression(SpecialType.System_String), Accessibility.Public,
-              getAccessorStatements: new SyntaxNode[]
-              { generator.ReturnStatement(generator.IdentifierName("_lastName")) },
-              setAccessorStatements: new SyntaxNode[]
-              { generator.AssignmentStatement(generator.IdentifierName("_lastName"),
-                generator.IdentifierName("value"))});
+              generator.TypeExpression(SpecialType.System_String), 
+              Accessibility.Public,
+              getAccessorStatements: new SyntaxNode[] { },
+              //{ generator.ReturnStatement(generator.IdentifierName("_lastName")) },
+              setAccessorStatements: new SyntaxNode[] { }
+              //{ generator.AssignmentStatement(generator.IdentifierName("_lastName"), generator.IdentifierName("value"))}
+              );
+
             var firstNameProperty = generator.PropertyDeclaration("FirstName",
               generator.TypeExpression(SpecialType.System_String),
               Accessibility.Public,
@@ -50,10 +61,10 @@ namespace CodeGenerator
             // Generate parameters for the class' constructor
             var constructorParameters = new SyntaxNode[] {
               generator.ParameterDeclaration("LastName",
-              //generator.NullableTypeExpression(lastNameProperty)),
-              generator.TypeExpression(SpecialType.System_String)),
+              //generator.TypeExpression(SpecialType.System_TypedReference)),
+              ToTypeExpression(Type.GetType("System.String"), true, generator)),
               generator.ParameterDeclaration("FirstName",
-              generator.TypeExpression(SpecialType.System_String)) };
+              ToTypeExpression(Type.GetType("System.String"), true, generator))};
 
             // Generate the constructor's method body
             var constructorBody = new SyntaxNode[] {
@@ -98,7 +109,76 @@ namespace CodeGenerator
                 newNode.WriteTo(writer);
                 Console.Write(writer.ToString());
             };
+            Employee p = new Employee
+            {
+                RecursionLevel = 1,
+                BusinessEntityID = 2,
+                FirstName = "Duy",
+                LastName = "Tran",
+                ManagerFirstName = "Lindsay",
+                ManagerLastName = "Hoff",
+                OrganizationNode = "Abc123"
+            };
+            // (1,1,"Duy","Tran","abc","Lindsay","Hoff");
+            Console.WriteLine(p.FirstName + " - " + p.LastName + " - " + p.ManagerFirstName + " - " + p.RecursionLevel);
             Console.ReadLine();
+            
         }
+        
+
+        private static SyntaxNode ToTypeExpression(Type type, bool nullable, SyntaxGenerator generator)
+        {
+            SyntaxNode baseType;
+            SyntaxNode propType;
+
+            SpecialType specialType = ToSpecialType(type);
+
+            if (specialType == SpecialType.None)
+            {
+                baseType = generator.IdentifierName(type.Name);
+            }
+            else
+            {
+                baseType = generator.TypeExpression(specialType);
+            }
+
+            if (nullable && type.IsValueType)
+            {
+                propType = generator.NullableTypeExpression(baseType);
+            }
+            else
+            {
+                propType = baseType;
+            }
+
+            return propType;
+
+        }
+        private static SpecialType ToSpecialType(Type type)
+        {
+            Dictionary<string, SpecialType> datatypes = new Dictionary<string, SpecialType>();
+            Dictionary<string, string> datatypes1 = new Dictionary<string, string>();
+            datatypes.Add("System.Boolean", SpecialType.System_Boolean);
+            datatypes.Add("System.Byte", SpecialType.System_Byte);
+            datatypes.Add("System.SByte", SpecialType.System_SByte);
+            datatypes.Add("System.Char", SpecialType.System_Char);
+            datatypes.Add("System.Decimal", SpecialType.System_Decimal);
+            datatypes.Add("System.Double", SpecialType.System_Double);
+            datatypes.Add("System.Single", SpecialType.System_Single);
+            datatypes.Add("System.Int32", SpecialType.System_Int32);
+            datatypes.Add("System.UInt32", SpecialType.System_UInt32);
+            datatypes.Add("System.Int64", SpecialType.System_Int64);
+            datatypes.Add("System.UInt64", SpecialType.System_UInt64);
+            datatypes.Add("System.Object", SpecialType.System_Object);
+            datatypes.Add("System.Int16", SpecialType.System_Int16);
+            datatypes.Add("System.UInt16", SpecialType.System_UInt16);
+            datatypes.Add("System.String", SpecialType.System_String);
+            datatypes.Add("System.Void", SpecialType.System_Void);
+            if(datatypes.ContainsKey(type.FullName))
+            {
+                return datatypes.FirstOrDefault(t => type.FullName.Equals(t.Key)).Value;
+            }
+            return SpecialType.None;
+        }        
     }
 }

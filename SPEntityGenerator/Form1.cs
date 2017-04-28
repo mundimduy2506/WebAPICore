@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.MSBuild;
-
+using Microsoft.CodeAnalysis.Editing;
 
 namespace SPEntityGenerator
 {
@@ -27,6 +27,7 @@ namespace SPEntityGenerator
     {
         StringBuilder _property = null;
         Dictionary<string, string> datatypes = new Dictionary<string, string>();
+        Dictionary<string, SpecialType> specialDataType = new Dictionary<string, SpecialType>();
         string _classname = "";
         string _namespace = "";
         string _connection = "";
@@ -55,12 +56,31 @@ namespace SPEntityGenerator
             datatypes.Add("System.Int16", "short");
             datatypes.Add("System.UInt16", "ushort");
             datatypes.Add("System.String", "string");
+            datatypes.Add("System.Void", "void");
+
+            //initialize Roslyn SpecialType
+            specialDataType.Add("System.Boolean", SpecialType.System_Boolean);
+            specialDataType.Add("System.Byte", SpecialType.System_Byte);
+            specialDataType.Add("System.SByte", SpecialType.System_SByte);
+            specialDataType.Add("System.Char", SpecialType.System_Char);
+            specialDataType.Add("System.Decimal", SpecialType.System_Decimal);
+            specialDataType.Add("System.Double", SpecialType.System_Double);
+            specialDataType.Add("System.Single", SpecialType.System_Single);
+            specialDataType.Add("System.Int32", SpecialType.System_Int32);
+            specialDataType.Add("System.UInt32", SpecialType.System_UInt32);
+            specialDataType.Add("System.Int64", SpecialType.System_Int64);
+            specialDataType.Add("System.UInt64", SpecialType.System_UInt64);
+            specialDataType.Add("System.Object", SpecialType.System_Object);
+            specialDataType.Add("System.Int16", SpecialType.System_Int16);
+            specialDataType.Add("System.UInt16", SpecialType.System_UInt16);
+            specialDataType.Add("System.String", SpecialType.System_String);
+            specialDataType.Add("System.Void", SpecialType.System_Void);
         }
 
         private void InitializeData()
         {
             txtConnectionString.Text = @"Data Source=DESKTOP-Q8N5MOD\sqlexpress;Initial Catalog=AdventureWorks2012;Persist Security Info=True;User ID=sa;Password=123456";
-            txt_SaveFolder.Text = @"C:\";
+            txt_SaveFolder.Text = @"C:\Duy\aaa";
             HideParamaterGrid();
         }
 
@@ -84,6 +104,7 @@ namespace SPEntityGenerator
                 }
                 else
                 {
+                    _classname = CapitalizeFirstLetter(txt_ClassName.Text);
                     foreach (DataGridViewRow Datarow in dataGridView2.Rows)
                     {
                         if (!String.IsNullOrEmpty(Datarow.Cells[0].Value.ToString().Trim())
@@ -107,7 +128,7 @@ namespace SPEntityGenerator
                 if (isValidInput)
                 {
                     cmd = cn.CreateCommand();
-                    var sql = String.Format("exec {0}.{1} {2}",schema, spName, String.Join(", ", paramDic.Select(t => t.Key).ToArray()));
+                    var sql = String.Format("exec {0}.{1} {2}", schema, spName, String.Join(", ", paramDic.Select(t => t.Key).ToArray()));
 
                     var rs = DBExtension.DynamicDataFromSql(cmd, sql, paramDic);
                     List<EntityBase> listProp = new List<EntityBase>();
@@ -123,7 +144,8 @@ namespace SPEntityGenerator
                             }
                             listProp.Add(new MapperConfiguration(cfg => { }).CreateMapper().Map<EntityBase>(dataRow));
                         }
-                        PrepareContent(listProp);
+                        //PrepareContent(listProp);
+                        GenerateClass(listProp);
                         MessageBox.Show("Class is generated.");
                     }
                     else
@@ -142,6 +164,7 @@ namespace SPEntityGenerator
                 cn.Close();
             }
         }
+
 
         private void BtnLoad_Click(object sender, EventArgs e)
         {
@@ -174,7 +197,8 @@ namespace SPEntityGenerator
                     MessageBox.Show("No stored procedure found.");
                     HideParamaterGrid();
                 }
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 MessageBox.Show("Something went wrong. \n" + ex.Message);
                 HideParamaterGrid();
@@ -260,7 +284,139 @@ namespace SPEntityGenerator
         }
         #endregion
 
-        #region additional functions
+        #region Generate source code with Roslyn
+
+        private void GenerateClass(List<EntityBase> listProp)
+        {
+            var members = new List<SyntaxNode>();
+            var constructorParam = new List<SyntaxNode>();
+            var constructorBody = new List<SyntaxNode>();
+
+            // Get a workspace
+            var workspace = new AdhocWorkspace();
+            // Get the SyntaxGenerator for the specified language
+            var generator = SyntaxGenerator.GetGenerator(workspace, LanguageNames.CSharp);
+            // Create using/Imports directives
+            var usingDirectives = generator.NamespaceImportDeclaration("System");
+
+            // Generate private fields
+            foreach (var item in listProp)
+            {
+                var privateFile = LowerCaseFirstLetter(item.ColumnName);
+                var tempfile = generator.FieldDeclaration(privateFile,
+                  ToTypeExpression(Type.GetType(item.DataType), "True".Equals(item.AllowDBNull), generator),
+                  Accessibility.Private);
+                members.Add(tempfile);
+            }
+
+            // Generate properties with explicit get/set
+            foreach (var item in listProp)
+            {
+                var privateFile = LowerCaseFirstLetter(item.ColumnName);
+                var tempProperty = generator.PropertyDeclaration(item.ColumnName,
+                  ToTypeExpression(Type.GetType(item.DataType), "True".Equals(item.AllowDBNull), generator),
+                  Accessibility.Public,
+                  getAccessorStatements: new SyntaxNode[] { generator.ReturnStatement(generator.IdentifierName(privateFile)) },
+                  setAccessorStatements: new SyntaxNode[] { generator.AssignmentStatement(generator.IdentifierName(privateFile),
+                generator.IdentifierName("value")) });
+                members.Add(tempProperty);
+                //generate constructor parameters
+                constructorParam.Add(
+                    generator.ParameterDeclaration(item.ColumnName,
+                    ToTypeExpression(Type.GetType(item.DataType), "True".Equals(item.AllowDBNull), generator)));
+                //generate constructor body
+                constructorBody.Add(
+                    generator.AssignmentStatement(generator.IdentifierName(privateFile),
+                    generator.IdentifierName(item.ColumnName)));
+            }
+
+            // Generate the class's default constructor
+            var defaultConstructor = generator.ConstructorDeclaration(_classname,
+              null, Accessibility.Public,
+              statements: null);
+            members.Add(defaultConstructor);
+
+            // Generate the class' parameterized constructor
+            var constructor = generator.ConstructorDeclaration(_classname,
+              constructorParam, Accessibility.Public,
+              statements: constructorBody);
+            members.Add(constructor);
+
+            // Generate the class
+            var classDefinition = generator.ClassDeclaration(
+              _classname, typeParameters: null,
+              accessibility: Accessibility.Public,
+              modifiers: DeclarationModifiers.Partial,
+              baseType: null, //change baseNote to null if you want to remove inherance from PersonBase
+              members: members);
+
+            // Declare a namespace
+            var namespaceDeclaration = generator.NamespaceDeclaration("MyNameSpace", classDefinition);
+
+            // Get a CompilationUnit (code file) for the generated code
+            var newNode = generator.CompilationUnit(usingDirectives, namespaceDeclaration).
+              NormalizeWhitespace();
+
+            Directory.CreateDirectory(txt_SaveFolder.Text);
+            var filePath = String.Format(@"{0}\{1}.cs", txt_SaveFolder.Text, _classname);
+            var outStr = newNode.ToFullString();
+
+            Task.Run(async () =>
+            {
+                await WriteFileToFolder(outStr, filePath);
+            })
+            .GetAwaiter()
+            .GetResult();
+        }
+
+
+        /// <summary>
+        /// cast CLR Data Type to Roslyn SpecialType
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="nullable"></param>
+        /// <param name="generator"></param>
+        /// <returns></returns>
+        private SyntaxNode ToTypeExpression(Type type, bool nullable, SyntaxGenerator generator)
+        {
+            SyntaxNode baseType;
+            SyntaxNode propType;
+
+            SpecialType specialType = ToSpecialType(type);
+
+            if (specialType == SpecialType.None)
+            {
+                baseType = generator.IdentifierName(type.Name);
+            }
+            else
+            {
+                baseType = generator.TypeExpression(specialType);
+            }
+
+            if (nullable && type.IsValueType)
+            {
+                propType = generator.NullableTypeExpression(baseType);
+            }
+            else
+            {
+                propType = baseType;
+            }
+
+            return propType;
+
+        }
+
+        private SpecialType ToSpecialType(Type type)
+        {
+            if (specialDataType.ContainsKey(type.FullName))
+            {
+                return specialDataType.FirstOrDefault(t => type.FullName.Equals(t.Key)).Value;
+            }
+            return SpecialType.None;
+        }
+        #endregion
+
+        #region Write file using template
         /// <summary>
         /// Prepare all class content prior writing to file
         /// </summary>
@@ -280,7 +436,7 @@ namespace SPEntityGenerator
                     _property.Append("[Key]\n");
                 }
                 var type = Type.GetType(item.DataType).FullName;
-                var dtype = String.IsNullOrEmpty(datatypes.FirstOrDefault(t=>type.Equals(t.Key)).Value)
+                var dtype = String.IsNullOrEmpty(datatypes.FirstOrDefault(t => type.Equals(t.Key)).Value)
                             ? Type.GetType(item.DataType).Name
                             : datatypes.FirstOrDefault(t => type.Equals(t.Key)).Value;
                 _property.Append("public " + dtype + ("True".Equals(item.AllowDBNull) && !"System.String".Equals(item.DataType) ? "? " : " "))
@@ -321,7 +477,8 @@ namespace SPEntityGenerator
             // Write the new file.
             File.WriteAllText(filePath, formattedResult.ToFullString());
         }
-
+        #endregion
+        #region additional functions
         /// <summary>
         /// Capitalize the first letter of class name to match convention
         /// </summary>
@@ -333,6 +490,21 @@ namespace SPEntityGenerator
             if (s.Length == 1) return s.ToUpper();
             return s.Remove(1).ToUpper() + s.Substring(1);
         }
+
+
+        /// <summary>
+        /// Capitalize the first letter of class name to match convention
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public string LowerCaseFirstLetter(string s)
+        {
+            if (String.IsNullOrEmpty(s)) return s;
+            if (s.Length == 1) return "_" + s.ToLower();
+            return "_" + s.Remove(1).ToLower() + s.Substring(1);
+        }
+
+
         private void ShowParamaterGrid()
         {
             dataGridView2.Visible = true;
