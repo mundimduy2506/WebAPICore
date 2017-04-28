@@ -285,7 +285,10 @@ namespace SPEntityGenerator
         #endregion
 
         #region Generate source code with Roslyn
-
+        /// <summary>
+        /// Generate code utilize Roslyn 
+        /// </summary>
+        /// <param name="listProp"></param>
         private void GenerateClass(List<EntityBase> listProp)
         {
             var members = new List<SyntaxNode>();
@@ -314,12 +317,13 @@ namespace SPEntityGenerator
             {
                 var privateFile = LowerCaseFirstLetter(item.ColumnName);
                 var tempProperty = generator.PropertyDeclaration(item.ColumnName,
-                  ToTypeExpression(Type.GetType(item.DataType), "True".Equals(item.AllowDBNull), generator),
-                  Accessibility.Public,
-                  getAccessorStatements: new SyntaxNode[] { generator.ReturnStatement(generator.IdentifierName(privateFile)) },
-                  setAccessorStatements: new SyntaxNode[] { generator.AssignmentStatement(generator.IdentifierName(privateFile),
+                    ToTypeExpression(Type.GetType(item.DataType), "True".Equals(item.AllowDBNull), generator),
+                    Accessibility.Public,
+                    getAccessorStatements: new SyntaxNode[] { generator.ReturnStatement(generator.IdentifierName(privateFile)) },
+                    setAccessorStatements: new SyntaxNode[] { generator.AssignmentStatement(generator.IdentifierName(privateFile),
                 generator.IdentifierName("value")) });
                 members.Add(tempProperty);
+
                 //generate constructor parameters
                 constructorParam.Add(
                     generator.ParameterDeclaration(item.ColumnName,
@@ -331,15 +335,11 @@ namespace SPEntityGenerator
             }
 
             // Generate the class's default constructor
-            var defaultConstructor = generator.ConstructorDeclaration(_classname,
-              null, Accessibility.Public,
-              statements: null);
+            var defaultConstructor = generator.ConstructorDeclaration(_classname, null, Accessibility.Public, statements: null);
             members.Add(defaultConstructor);
 
             // Generate the class' parameterized constructor
-            var constructor = generator.ConstructorDeclaration(_classname,
-              constructorParam, Accessibility.Public,
-              statements: constructorBody);
+            var constructor = generator.ConstructorDeclaration(_classname, constructorParam, Accessibility.Public, statements: constructorBody);
             members.Add(constructor);
 
             // Generate the class
@@ -354,13 +354,11 @@ namespace SPEntityGenerator
             var namespaceDeclaration = generator.NamespaceDeclaration("MyNameSpace", classDefinition);
 
             // Get a CompilationUnit (code file) for the generated code
-            var newNode = generator.CompilationUnit(usingDirectives, namespaceDeclaration).
-              NormalizeWhitespace();
+            var newNode = generator.CompilationUnit(usingDirectives, namespaceDeclaration).NormalizeWhitespace();
 
             Directory.CreateDirectory(txt_SaveFolder.Text);
             var filePath = String.Format(@"{0}\{1}.cs", txt_SaveFolder.Text, _classname);
             var outStr = newNode.ToFullString();
-
             Task.Run(async () =>
             {
                 await WriteFileToFolder(outStr, filePath);
