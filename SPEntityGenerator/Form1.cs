@@ -144,7 +144,7 @@ namespace SPEntityGenerator
                             }
                             listProp.Add(new MapperConfiguration(cfg => { }).CreateMapper().Map<EntityBase>(dataRow));
                         }
-                        //PrepareContent(listProp);
+                        PrepareContent(listProp);
                         GenerateClass(listProp);
                         MessageBox.Show("Class is generated.");
                     }
@@ -302,11 +302,11 @@ namespace SPEntityGenerator
             // Create using/Imports directives
             var usingDirectives = generator.NamespaceImportDeclaration("System");
 
-            // Generate private fields
+            // Generate backing fields
             foreach (var item in listProp)
             {
-                var privateFile = LowerCaseFirstLetter(item.ColumnName);
-                var tempfile = generator.FieldDeclaration(privateFile,
+                var backingField = LowerCaseFirstLetter(item.ColumnName);
+                var tempfile = generator.FieldDeclaration(backingField,
                   ToTypeExpression(Type.GetType(item.DataType), "True".Equals(item.AllowDBNull), generator),
                   Accessibility.Private);
                 members.Add(tempfile);
@@ -315,12 +315,12 @@ namespace SPEntityGenerator
             // Generate properties with explicit get/set
             foreach (var item in listProp)
             {
-                var privateFile = LowerCaseFirstLetter(item.ColumnName);
+                var backingField = LowerCaseFirstLetter(item.ColumnName);
                 var tempProperty = generator.PropertyDeclaration(item.ColumnName,
                     ToTypeExpression(Type.GetType(item.DataType), "True".Equals(item.AllowDBNull), generator),
                     Accessibility.Public,
-                    getAccessorStatements: new SyntaxNode[] { generator.ReturnStatement(generator.IdentifierName(privateFile)) },
-                    setAccessorStatements: new SyntaxNode[] { generator.AssignmentStatement(generator.IdentifierName(privateFile),
+                    getAccessorStatements: new SyntaxNode[] { generator.ReturnStatement(generator.IdentifierName(backingField)) },
+                    setAccessorStatements: new SyntaxNode[] { generator.AssignmentStatement(generator.IdentifierName(backingField),
                 generator.IdentifierName("value")) });
                 members.Add(tempProperty);
 
@@ -330,7 +330,7 @@ namespace SPEntityGenerator
                     ToTypeExpression(Type.GetType(item.DataType), "True".Equals(item.AllowDBNull), generator)));
                 //generate constructor body
                 constructorBody.Add(
-                    generator.AssignmentStatement(generator.IdentifierName(privateFile),
+                    generator.AssignmentStatement(generator.IdentifierName(backingField),
                     generator.IdentifierName(item.ColumnName)));
             }
 
@@ -347,7 +347,7 @@ namespace SPEntityGenerator
               _classname, typeParameters: null,
               accessibility: Accessibility.Public,
               modifiers: DeclarationModifiers.Partial,
-              baseType: null, //change baseNote to null if you want to remove inherance from PersonBase
+              baseType: null, //change baseNote to null if you want to remove inherance from Base class
               members: members);
 
             // Declare a namespace
@@ -437,7 +437,7 @@ namespace SPEntityGenerator
                 var dtype = String.IsNullOrEmpty(datatypes.FirstOrDefault(t => type.Equals(t.Key)).Value)
                             ? Type.GetType(item.DataType).Name
                             : datatypes.FirstOrDefault(t => type.Equals(t.Key)).Value;
-                _property.Append("public " + dtype + ("True".Equals(item.AllowDBNull) && !"System.String".Equals(item.DataType) ? "? " : " "))
+                _property.Append("public " + dtype + ("True".Equals(item.AllowDBNull) && Type.GetType(item.DataType).IsValueType ? "? " : " "))
                             .Append(CapitalizeFirstLetter(item.ColumnName))
                             .Append(" { get; set; }\n");
                 isFirst = false;
@@ -446,16 +446,8 @@ namespace SPEntityGenerator
                                 .Replace("<NameSpace>", _namespace)
                                 .Replace("<ClassName>", _classname);
             Directory.CreateDirectory(txt_SaveFolder.Text);
-            var filePath = String.Format(@"{0}\{1}.cs", txt_SaveFolder.Text, _classname);
-
-            // Use Task to call WriteFileToFolder
-            Task.Run(async () =>
-            {
-                await WriteFileToFolder(outstr, filePath);
-            })
-            .GetAwaiter()
-            .GetResult();
-
+            var filePath = String.Format(@"{0}\{1}_normal.cs", txt_SaveFolder.Text, _classname);
+            File.WriteAllText(filePath, outstr);
         }
 
         /// <summary>
@@ -476,6 +468,7 @@ namespace SPEntityGenerator
             File.WriteAllText(filePath, formattedResult.ToFullString());
         }
         #endregion
+        
         #region additional functions
         /// <summary>
         /// Capitalize the first letter of class name to match convention
@@ -491,7 +484,7 @@ namespace SPEntityGenerator
 
 
         /// <summary>
-        /// Capitalize the first letter of class name to match convention
+        /// Lowercase the first letter of class name to match convention
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>

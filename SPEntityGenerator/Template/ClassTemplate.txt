@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 namespace <NameSpace>
 {
-public partial class <ClassName>
-{
-<Property>
-}
+	public partial class <ClassName>
+	{
+		<Property>
+	}
 }
