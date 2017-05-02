@@ -20,6 +20,9 @@ using System.Windows.Forms;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.MSBuild;
 using Microsoft.CodeAnalysis.Editing;
+using SF = Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+using Microsoft.CodeAnalysis.Options;
+using Microsoft.CodeAnalysis.CSharp.Formatting;
 
 namespace SPEntityGenerator
 {
@@ -28,6 +31,7 @@ namespace SPEntityGenerator
         StringBuilder _property = null;
         Dictionary<string, string> datatypes = new Dictionary<string, string>();
         Dictionary<string, SpecialType> specialDataType = new Dictionary<string, SpecialType>();
+        Dictionary<string, SyntaxKind> syntaxKinds = new Dictionary<string, SyntaxKind>();
         string _classname = "";
         string _namespace = "";
         string _connection = "";
@@ -75,12 +79,31 @@ namespace SPEntityGenerator
             specialDataType.Add("System.UInt16", SpecialType.System_UInt16);
             specialDataType.Add("System.String", SpecialType.System_String);
             specialDataType.Add("System.Void", SpecialType.System_Void);
+
+
+            //initialize Roslyn SyntaxKind
+            syntaxKinds.Add("System.Boolean", SyntaxKind.BoolKeyword);
+            syntaxKinds.Add("System.Byte", SyntaxKind.ByteKeyword);
+            syntaxKinds.Add("System.SByte", SyntaxKind.SByteKeyword);
+            syntaxKinds.Add("System.Char", SyntaxKind.CharKeyword);
+            syntaxKinds.Add("System.Decimal", SyntaxKind.DecimalKeyword);
+            syntaxKinds.Add("System.Double", SyntaxKind.DoubleKeyword);
+            syntaxKinds.Add("System.Single", SyntaxKind.FloatKeyword);
+            syntaxKinds.Add("System.Int32", SyntaxKind.IntKeyword);
+            syntaxKinds.Add("System.UInt32", SyntaxKind.UIntKeyword);
+            syntaxKinds.Add("System.Int64", SyntaxKind.LongKeyword);
+            syntaxKinds.Add("System.UInt64", SyntaxKind.ULongKeyword);
+            syntaxKinds.Add("System.Object", SyntaxKind.ObjectKeyword);
+            syntaxKinds.Add("System.Int16", SyntaxKind.ShortKeyword);
+            syntaxKinds.Add("System.UInt16", SyntaxKind.UShortKeyword);
+            syntaxKinds.Add("System.String", SyntaxKind.StringKeyword);
+            syntaxKinds.Add("System.Void", SyntaxKind.VoidKeyword);
         }
 
         private void InitializeData()
         {
-            txtConnectionString.Text = @"Data Source=DESKTOP-Q8N5MOD\sqlexpress;Initial Catalog=AdventureWorks2012;Persist Security Info=True;User ID=sa;Password=123456";
-            txt_SaveFolder.Text = @"C:\Duy\aaa";
+            txtConnectionString.Text = @"Data Source=LT-00005495\SQLEXPRESS;Initial Catalog=WebAPI;Persist Security Info=True;User ID=sa;Password=Abcde12345-";
+            txt_SaveFolder.Text = @"E:\Duy\aaa";
             HideParamaterGrid();
         }
 
@@ -144,8 +167,9 @@ namespace SPEntityGenerator
                             }
                             listProp.Add(new MapperConfiguration(cfg => { }).CreateMapper().Map<EntityBase>(dataRow));
                         }
-                        PrepareContent(listProp);
-                        GenerateClass(listProp);
+                        //PrepareContent(listProp);
+                        //GenerateClass(listProp);
+                        GenerateRoslynClassNew(listProp);
                         MessageBox.Show("Class is generated.");
                     }
                     else
@@ -284,7 +308,99 @@ namespace SPEntityGenerator
         }
         #endregion
 
-        #region Generate source code with Roslyn
+        #region Generate source with Roslyn: new version
+        private void GenerateRoslynClassNew(List<EntityBase> listProp)
+        {
+            CompilationUnitSyntax cu = SF.CompilationUnit();
+            cu = SF.CompilationUnit()
+            .AddUsings(SF.UsingDirective(SF.IdentifierName("System")))
+            .AddUsings(SF.UsingDirective(SF.IdentifierName("System.Generic")));
+
+            NamespaceDeclarationSyntax ns = SF.NamespaceDeclaration(SF.IdentifierName("MyNamespace"));
+            ClassDeclarationSyntax c = SF.ClassDeclaration(_classname)
+            .AddModifiers(SF.Token(SyntaxKind.PublicKeyword))
+            .AddModifiers(SF.Token(SyntaxKind.PartialKeyword))
+    ;
+            // Add a property
+            PropertyDeclarationSyntax @property;
+            foreach (var item in listProp)
+            {
+                @property =GetNullableCheck(item).AddModifiers(SF.Token(SyntaxKind.PublicKeyword));
+                // Add a getter
+                @property = @property.AddAccessorListAccessors(
+                        SF.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
+                        .WithSemicolonToken(SF.Token(SyntaxKind.SemicolonToken)
+                        ));
+                // Add a setter
+                @property = @property.AddAccessorListAccessors(
+                        SF.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
+                        //.AddModifiers(SF.Token(SyntaxKind.PrivateKeyword))
+                        .WithSemicolonToken(SF.Token(SyntaxKind.SemicolonToken)
+                        ));
+                // Add the property to the class
+                c = c.AddMembers(@property);
+            }
+            ns = ns.AddMembers(c);
+            cu = cu.AddMembers(ns);
+            AdhocWorkspace cw = new AdhocWorkspace();
+            OptionSet options = cw.Options;
+            //options = options.WithChangedOption(CSharpFormattingOptions.NewLinesForBracesInProperties, true);
+            //options = options.WithChangedOption(CSharpFormattingOptions.NewLinesForBracesInTypes, true);
+            SyntaxNode formattedNode = Formatter.Format(cu, cw, options);
+            Directory.CreateDirectory(txt_SaveFolder.Text);
+            var filePath = String.Format(@"{0}\{1}.cs", txt_SaveFolder.Text, _classname);
+            File.WriteAllText(filePath, formattedNode.ToFullString());
+        }
+
+        private PropertyDeclarationSyntax GetNullableCheck(EntityBase item)
+        {
+            var nullable = "True".Equals(item.AllowDBNull);
+            var type = Type.GetType(item.DataType);
+
+            SyntaxKind _syntaxKind = ToSyntaxKind(type);
+
+            if (_syntaxKind == SyntaxKind.None)
+            {
+                if (nullable && type.IsValueType)
+                {
+                    return SF.PropertyDeclaration(
+                    SF.NullableType(SF.IdentifierName(type.Name)), SF.Identifier(item.ColumnName));
+                }
+                else
+                {
+                    return SF.PropertyDeclaration(
+                    SF.IdentifierName(type.Name), SF.Identifier(item.ColumnName));
+                }
+            }
+            else
+            {
+                if (nullable && type.IsValueType)
+                {
+                    return SF.PropertyDeclaration(
+                    SF.NullableType(SF.PredefinedType(SF.Token(_syntaxKind))), SF.Identifier(item.ColumnName)
+                    );
+                }
+                else
+                {
+                    return SF.PropertyDeclaration(
+                    SF.PredefinedType(SF.Token(_syntaxKind)), SF.Identifier(item.ColumnName));
+                }
+            }
+
+        }
+
+
+        private SyntaxKind ToSyntaxKind(Type type)
+        {
+            if (specialDataType.ContainsKey(type.FullName))
+            {
+                return syntaxKinds.FirstOrDefault(t => type.FullName.Equals(t.Key)).Value;
+            }
+            return SyntaxKind.None;
+        }
+        #endregion
+
+        #region Generate source code with Roslyn: Old version
         /// <summary>
         /// Generate code utilize Roslyn 
         /// </summary>
@@ -354,22 +470,25 @@ namespace SPEntityGenerator
             var namespaceDeclaration = generator.NamespaceDeclaration("MyNameSpace", classDefinition);
 
             // Get a CompilationUnit (code file) for the generated code
-            var newNode = generator.CompilationUnit(usingDirectives, namespaceDeclaration).NormalizeWhitespace();
+            var newNode = generator.CompilationUnit(usingDirectives, namespaceDeclaration);//.NormalizeWhitespace();
 
             Directory.CreateDirectory(txt_SaveFolder.Text);
             var filePath = String.Format(@"{0}\{1}.cs", txt_SaveFolder.Text, _classname);
             var outStr = newNode.ToFullString();
+            File.WriteAllText(filePath, outStr);
+            /*
             Task.Run(async () =>
             {
                 await WriteFileToFolder(outStr, filePath);
             })
             .GetAwaiter()
             .GetResult();
+            */
         }
 
 
         /// <summary>
-        /// cast CLR Data Type to Roslyn SpecialType
+        /// Cast CLR Data Type to Roslyn SpecialType
         /// </summary>
         /// <param name="type"></param>
         /// <param name="nullable"></param>
@@ -447,7 +566,16 @@ namespace SPEntityGenerator
                                 .Replace("<ClassName>", _classname);
             Directory.CreateDirectory(txt_SaveFolder.Text);
             var filePath = String.Format(@"{0}\{1}_normal.cs", txt_SaveFolder.Text, _classname);
-            File.WriteAllText(filePath, outstr);
+            //File.WriteAllText(filePath, outstr);
+
+
+            Task.Run(async () =>
+            {
+                await WriteFileToFolder(outstr, filePath);
+            })
+            .GetAwaiter()
+            .GetResult();
+
         }
 
         /// <summary>
@@ -464,11 +592,12 @@ namespace SPEntityGenerator
             // Get the root CompilationUnitSyntax.
             var root = await tree.GetRootAsync().ConfigureAwait(false) as CompilationUnitSyntax;
             var formattedResult = Formatter.Format(root.NormalizeWhitespace(), MSBuildWorkspace.Create());
+
             // Write the new file.
             File.WriteAllText(filePath, formattedResult.ToFullString());
         }
         #endregion
-        
+
         #region additional functions
         /// <summary>
         /// Capitalize the first letter of class name to match convention

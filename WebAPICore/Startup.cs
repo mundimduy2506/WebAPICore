@@ -34,7 +34,7 @@ namespace WebAPICore
             // Add framework services.
             services.AddMvc();
             //Add DI for EF
-            var connection = @"Data Source=DESKTOP-Q8N5MOD\sqlexpress;Initial Catalog=WebAPI;Persist Security Info=True;User ID=sa;Password=123456;";
+            var connection = @"Data Source=LT-00005495\SQLEXPRESS;Initial Catalog=WebAPI;Persist Security Info=True;User ID=sa;Password=Abcde12345-;";
             services.AddDbContext<WebAPIContext>(options => options.UseSqlServer(connection));
             services.AddScoped<ICustomerRepository, CustomerRepository>();// Register the Swagger generator, defining one or more Swagger documents
             services.AddSwaggerGen(c =>

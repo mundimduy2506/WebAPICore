@@ -1,0 +1,14 @@
+version: '2'
+
+services:
+  firstdockerapp:
+    image: firstdockerapp
+    build:
+      context: ./FirstDockerApp
+      dockerfile: Dockerfile
+
+  webapicore:
+    image: webapicore
+    build:
+      context: ./WebAPICore
+      dockerfile: Dockerfile
