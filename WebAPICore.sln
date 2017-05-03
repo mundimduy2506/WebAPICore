@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPEntityGenerator", "SPEnti
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeGenerator", "CodeGenerator\CodeGenerator.csproj", "{68106858-FBB8-42FF-B17A-054D2E0DDB09}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SPClassGenerator", "SPClassGenerator\SPClassGenerator.vdproj", "{405829D2-8964-4986-863F-D8B7E4B42FAA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,8 @@ Global
 		{68106858-FBB8-42FF-B17A-054D2E0DDB09}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{68106858-FBB8-42FF-B17A-054D2E0DDB09}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{68106858-FBB8-42FF-B17A-054D2E0DDB09}.Release|Any CPU.Build.0 = Release|Any CPU
+		{405829D2-8964-4986-863F-D8B7E4B42FAA}.Debug|Any CPU.ActiveCfg = Debug
+		{405829D2-8964-4986-863F-D8B7E4B42FAA}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

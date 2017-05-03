@@ -103,9 +103,9 @@ namespace SPEntityGenerator
         private void InitializeData()
         {
             //txtConnectionString.Text = @"Data Source=LT-00005495\SQLEXPRESS;Initial Catalog=WebAPI;Persist Security Info=True;User ID=sa;Password=Abcde12345-";
-            txtConnectionString.Text = ConfigurationSettings.AppSettings["connectionstring"];
-            txt_SaveFolder.Text = ConfigurationSettings.AppSettings["savePath"];
-            txt_Namespace.Text = ConfigurationSettings.AppSettings["namespace"];
+            txtConnectionString.Text = ConfigurationManager.AppSettings["connectionstring"];
+            txt_SaveFolder.Text = ConfigurationManager.AppSettings["savePath"];
+            txt_Namespace.Text = ConfigurationManager.AppSettings["namespace"];
             HideParamaterGrid();
         }
         #endregion
