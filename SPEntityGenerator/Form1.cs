@@ -22,7 +22,7 @@ using Microsoft.CodeAnalysis.MSBuild;
 using Microsoft.CodeAnalysis.Editing;
 using SF = Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using Microsoft.CodeAnalysis.Options;
-using Microsoft.CodeAnalysis.CSharp.Formatting;
+using System.Configuration;
 
 namespace SPEntityGenerator
 {
@@ -36,6 +36,7 @@ namespace SPEntityGenerator
         string _namespace = "";
         string _connection = "";
 
+        #region initialize the form
         public Form1()
         {
             InitializeComponent();
@@ -99,14 +100,17 @@ namespace SPEntityGenerator
             syntaxKinds.Add("System.String", SyntaxKind.StringKeyword);
             syntaxKinds.Add("System.Void", SyntaxKind.VoidKeyword);
         }
-
         private void InitializeData()
         {
-            txtConnectionString.Text = @"Data Source=LT-00005495\SQLEXPRESS;Initial Catalog=WebAPI;Persist Security Info=True;User ID=sa;Password=Abcde12345-";
-            txt_SaveFolder.Text = @"E:\Duy\aaa";
+            //txtConnectionString.Text = @"Data Source=LT-00005495\SQLEXPRESS;Initial Catalog=WebAPI;Persist Security Info=True;User ID=sa;Password=Abcde12345-";
+            txtConnectionString.Text = ConfigurationSettings.AppSettings["connectionstring"];
+            txt_SaveFolder.Text = ConfigurationSettings.AppSettings["savePath"];
+            txt_Namespace.Text = ConfigurationSettings.AppSettings["namespace"];
             HideParamaterGrid();
         }
+        #endregion
 
+        #region Generate button
         private void BtnGenerate_Click(object sender, EventArgs e)
         {
             SqlConnection cn = new SqlConnection();
@@ -128,6 +132,7 @@ namespace SPEntityGenerator
                 else
                 {
                     _classname = CapitalizeFirstLetter(txt_ClassName.Text);
+                    _namespace = CapitalizeFirstLetter(String.IsNullOrWhiteSpace(txt_Namespace.Text) ? "MyNamespace" : CapitalizeFirstLetter(txt_Namespace.Text));
                     foreach (DataGridViewRow Datarow in dataGridView2.Rows)
                     {
                         if (!String.IsNullOrEmpty(Datarow.Cells[0].Value.ToString().Trim())
@@ -188,8 +193,9 @@ namespace SPEntityGenerator
                 cn.Close();
             }
         }
+        #endregion
 
-
+        #region Load button and grid click event
         private void BtnLoad_Click(object sender, EventArgs e)
         {
             if (String.IsNullOrEmpty(txtConnectionString.Text))
@@ -249,6 +255,8 @@ namespace SPEntityGenerator
                 txt_SaveFolder.Text = folderBrowserDialog1.SelectedPath;
             }
         }
+
+        #endregion
 
         #region Bind DataGrid
         /// <summary>
@@ -316,7 +324,7 @@ namespace SPEntityGenerator
             .AddUsings(SF.UsingDirective(SF.IdentifierName("System")))
             .AddUsings(SF.UsingDirective(SF.IdentifierName("System.Generic")));
 
-            NamespaceDeclarationSyntax ns = SF.NamespaceDeclaration(SF.IdentifierName("MyNamespace"));
+            NamespaceDeclarationSyntax ns = SF.NamespaceDeclaration(SF.IdentifierName(_namespace));
             ClassDeclarationSyntax c = SF.ClassDeclaration(_classname)
             .AddModifiers(SF.Token(SyntaxKind.PublicKeyword))
             .AddModifiers(SF.Token(SyntaxKind.PartialKeyword))
@@ -325,7 +333,7 @@ namespace SPEntityGenerator
             PropertyDeclarationSyntax @property;
             foreach (var item in listProp)
             {
-                @property =GetNullableCheck(item).AddModifiers(SF.Token(SyntaxKind.PublicKeyword));
+                @property = GetNullableCheck(item).AddModifiers(SF.Token(SyntaxKind.PublicKeyword));
                 // Add a getter
                 @property = @property.AddAccessorListAccessors(
                         SF.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
@@ -631,6 +639,8 @@ namespace SPEntityGenerator
             label_Parameter.Visible = true;
             label_ClassName.Visible = true;
             txt_ClassName.Visible = true;
+            label_Namespace.Visible = true;
+            txt_Namespace.Visible = true;
         }
 
         private void HideParamaterGrid()
@@ -639,6 +649,8 @@ namespace SPEntityGenerator
             label_Parameter.Visible = false;
             label_ClassName.Visible = false;
             txt_ClassName.Visible = false;
+            label_Namespace.Visible = false;
+            txt_Namespace.Visible = false;
             btnGenerate.Enabled = false;
         }
         #endregion

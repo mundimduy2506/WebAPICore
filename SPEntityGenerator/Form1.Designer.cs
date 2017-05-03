@@ -42,14 +42,16 @@
             this.btn_Browse = new System.Windows.Forms.Button();
             this.txt_SaveFolder = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
+            this.txt_Namespace = new System.Windows.Forms.TextBox();
+            this.label_Namespace = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
             this.SuspendLayout();
             // 
             // btnGenerate
             // 
-            this.btnGenerate.Location = new System.Drawing.Point(387, 675);
-            this.btnGenerate.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnGenerate.Location = new System.Drawing.Point(387, 685);
+            this.btnGenerate.Margin = new System.Windows.Forms.Padding(2);
             this.btnGenerate.Name = "btnGenerate";
             this.btnGenerate.Size = new System.Drawing.Size(104, 31);
             this.btnGenerate.TabIndex = 0;
@@ -63,7 +65,7 @@
             this.dataGridView1.AllowUserToDeleteRows = false;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Location = new System.Drawing.Point(8, 168);
-            this.dataGridView1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.dataGridView1.Margin = new System.Windows.Forms.Padding(2);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowTemplate.Height = 28;
             this.dataGridView1.Size = new System.Drawing.Size(888, 199);
@@ -73,7 +75,7 @@
             // txtConnectionString
             // 
             this.txtConnectionString.Location = new System.Drawing.Point(8, 24);
-            this.txtConnectionString.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtConnectionString.Margin = new System.Windows.Forms.Padding(2);
             this.txtConnectionString.Multiline = true;
             this.txtConnectionString.Name = "txtConnectionString";
             this.txtConnectionString.Size = new System.Drawing.Size(783, 66);
@@ -82,7 +84,7 @@
             // btnLoad
             // 
             this.btnLoad.Location = new System.Drawing.Point(803, 24);
-            this.btnLoad.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnLoad.Margin = new System.Windows.Forms.Padding(2);
             this.btnLoad.Name = "btnLoad";
             this.btnLoad.Size = new System.Drawing.Size(67, 21);
             this.btnLoad.TabIndex = 3;
@@ -106,7 +108,7 @@
             this.dataGridView2.AllowUserToDeleteRows = false;
             this.dataGridView2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView2.Location = new System.Drawing.Point(8, 424);
-            this.dataGridView2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.dataGridView2.Margin = new System.Windows.Forms.Padding(2);
             this.dataGridView2.Name = "dataGridView2";
             this.dataGridView2.RowTemplate.Height = 28;
             this.dataGridView2.Size = new System.Drawing.Size(888, 198);
@@ -125,7 +127,7 @@
             // label_ClassName
             // 
             this.label_ClassName.AutoSize = true;
-            this.label_ClassName.Location = new System.Drawing.Point(5, 638);
+            this.label_ClassName.Location = new System.Drawing.Point(9, 667);
             this.label_ClassName.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label_ClassName.Name = "label_ClassName";
             this.label_ClassName.Size = new System.Drawing.Size(66, 13);
@@ -134,8 +136,8 @@
             // 
             // txt_ClassName
             // 
-            this.txt_ClassName.Location = new System.Drawing.Point(75, 638);
-            this.txt_ClassName.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txt_ClassName.Location = new System.Drawing.Point(79, 667);
+            this.txt_ClassName.Margin = new System.Windows.Forms.Padding(2);
             this.txt_ClassName.Name = "txt_ClassName";
             this.txt_ClassName.Size = new System.Drawing.Size(260, 20);
             this.txt_ClassName.TabIndex = 8;
@@ -153,7 +155,7 @@
             // btn_Browse
             // 
             this.btn_Browse.Location = new System.Drawing.Point(803, 105);
-            this.btn_Browse.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btn_Browse.Margin = new System.Windows.Forms.Padding(2);
             this.btn_Browse.Name = "btn_Browse";
             this.btn_Browse.Size = new System.Drawing.Size(67, 19);
             this.btn_Browse.TabIndex = 10;
@@ -165,7 +167,7 @@
             // 
             this.txt_SaveFolder.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             this.txt_SaveFolder.Location = new System.Drawing.Point(8, 105);
-            this.txt_SaveFolder.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txt_SaveFolder.Margin = new System.Windows.Forms.Padding(2);
             this.txt_SaveFolder.Name = "txt_SaveFolder";
             this.txt_SaveFolder.Size = new System.Drawing.Size(783, 20);
             this.txt_SaveFolder.TabIndex = 11;
@@ -180,11 +182,31 @@
             this.label3.TabIndex = 12;
             this.label3.Text = "Save Directory:";
             // 
+            // txt_Namespace
+            // 
+            this.txt_Namespace.Location = new System.Drawing.Point(79, 637);
+            this.txt_Namespace.Margin = new System.Windows.Forms.Padding(2);
+            this.txt_Namespace.Name = "txt_Namespace";
+            this.txt_Namespace.Size = new System.Drawing.Size(260, 20);
+            this.txt_Namespace.TabIndex = 14;
+            // 
+            // label_Namespace
+            // 
+            this.label_Namespace.AutoSize = true;
+            this.label_Namespace.Location = new System.Drawing.Point(8, 637);
+            this.label_Namespace.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label_Namespace.Name = "label_Namespace";
+            this.label_Namespace.Size = new System.Drawing.Size(67, 13);
+            this.label_Namespace.TabIndex = 13;
+            this.label_Namespace.Text = "Namespace:";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(904, 721);
+            this.ClientSize = new System.Drawing.Size(904, 727);
+            this.Controls.Add(this.txt_Namespace);
+            this.Controls.Add(this.label_Namespace);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.txt_SaveFolder);
             this.Controls.Add(this.btn_Browse);
@@ -198,7 +220,7 @@
             this.Controls.Add(this.txtConnectionString);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.btnGenerate);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "Form1";
             this.Text = "SP Entity Generator";
             this.TransparencyKey = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
@@ -225,6 +247,8 @@
         private System.Windows.Forms.Button btn_Browse;
         private System.Windows.Forms.TextBox txt_SaveFolder;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox txt_Namespace;
+        private System.Windows.Forms.Label label_Namespace;
     }
 }
 
