@@ -28,14 +28,14 @@ namespace CodeGenerator
             //update from here
             CompilationUnitSyntax cu = SF.CompilationUnit();
             cu = SF.CompilationUnit()
-    .AddUsings(SF.UsingDirective(SF.IdentifierName("System")))
-    .AddUsings(SF.UsingDirective(SF.IdentifierName("System.Generic")))
-    ;
+            .AddUsings(SF.UsingDirective(SF.IdentifierName("System")))
+            .AddUsings(SF.UsingDirective(SF.IdentifierName("System.Generic")))
+            ;
 
             ClassDeclarationSyntax c = SF.ClassDeclaration("MyClass")
-    .AddModifiers(SF.Token(SyntaxKind.PublicKeyword))
-    .AddModifiers(SF.Token(SyntaxKind.PartialKeyword))
-    ;
+            .AddModifiers(SF.Token(SyntaxKind.PublicKeyword))
+            .AddModifiers(SF.Token(SyntaxKind.PartialKeyword))
+            ;
             // Add a property
             PropertyDeclarationSyntax @property =
                 SF.PropertyDeclaration(
@@ -71,8 +71,6 @@ namespace CodeGenerator
                 formattedNode.WriteTo(writer);
                 Console.WriteLine(writer);
             }
-
-
             Console.ReadLine();
 
         }
