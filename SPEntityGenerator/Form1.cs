@@ -121,13 +121,24 @@ namespace SPEntityGenerator
                 cn.ConnectionString = _connection;
                 cn.Open();
                 var paramDic = new Dictionary<string, object>();
-                var spName = dataGridView1.CurrentRow.Cells[0].Value;
-                var schema = dataGridView1.CurrentRow.Cells[1].Value;
+                var spName = string.Empty;
+                var schema = string.Empty;
+                if (String.IsNullOrEmpty(txtStoreProc.Text))
+                {
+                    spName = dataGridView1.CurrentRow.Cells[0].Value.ToString();
+                    schema = dataGridView1.CurrentRow.Cells[1].Value.ToString();
+                }
+                else
+                {
+                    spName = txtStoreProc.Text.Split('.')[1];
+                    schema = txtStoreProc.Text.Split('.')[0];
+                }
                 var isValidInput = true;
                 if (String.IsNullOrEmpty(txt_ClassName.Text.Trim()))
                 {
                     MessageBox.Show("Class name are required.");
                     isValidInput = false;
+                    return;
                 }
                 else
                 {
@@ -167,7 +178,7 @@ namespace SPEntityGenerator
                             var dataRow = new ExpandoObject() as IDictionary<string, object>;
                             foreach (DataColumn myProperty in rs.Columns)
                             {
-                                var column = myProperty.ColumnName.Trim();
+                                var column = CapitalizeFirstLetter(myProperty.ColumnName.Trim());
                                 dataRow.Add(myProperty.ColumnName.Trim(), myField[myProperty].ToString());
                             }
                             listProp.Add(new MapperConfiguration(cfg => { }).CreateMapper().Map<EntityBase>(dataRow));
@@ -201,6 +212,7 @@ namespace SPEntityGenerator
             if (String.IsNullOrEmpty(txtConnectionString.Text))
             {
                 MessageBox.Show("Connection string is required.");
+                return;
             }
             else
             {
@@ -217,10 +229,10 @@ namespace SPEntityGenerator
                 if (dataGridView1.Rows.Count > 0)
                 {
                     DataGridViewCellEventArgs temp = new DataGridViewCellEventArgs(0, 0);
-                    var text = dataGridView1.Rows[0].Cells[0].Value.ToString();
-                    BindParametterGrid(text);
+                    var sp_Name = dataGridView1.Rows[0].Cells[0].Value.ToString();
+                    var sch_Name = dataGridView1.Rows[0].Cells[1].Value.ToString();
+                    BindParametterGrid(sp_Name, sch_Name);
                     ShowParamaterGrid();
-                    btnGenerate.Enabled = true;
                 }
                 else
                 {
@@ -241,8 +253,9 @@ namespace SPEntityGenerator
             if (e.RowIndex >= 0)
             {
                 var sp_Name = dataGridView1.Rows[e.RowIndex].Cells[0].Value.ToString();
+                var sch_Name = dataGridView1.Rows[e.RowIndex].Cells[1].Value.ToString();
                 _classname = CapitalizeFirstLetter(sp_Name);
-                BindParametterGrid(sp_Name);
+                BindParametterGrid(sp_Name, sch_Name);
                 ShowParamaterGrid();
             }
         }
@@ -287,7 +300,7 @@ namespace SPEntityGenerator
         /// Fill parameters of specific stored procedure into grid
         /// </summary>
         /// <param name="spName"></param>
-        private void BindParametterGrid(string spName)
+        private void BindParametterGrid(string spName, string schName)
         {
             using (SqlConnection con = new SqlConnection(txtConnectionString.Text))
             {
@@ -295,8 +308,10 @@ namespace SPEntityGenerator
                 var sql = "select parameters.name as 'Paramater', sys.types.name as 'DataType', '' as 'Value' from sys.parameters"
                         + " inner join sys.procedures on parameters.object_id = procedures.object_id"
                         + " inner join sys.types on parameters.system_type_id = types.system_type_id"
-                        + " AND parameters.user_type_id = types.user_type_id where procedures.name = '{0}'";
-                using (SqlCommand cmd = new SqlCommand(String.Format(sql, spName), con))
+                        + " AND parameters.user_type_id = types.user_type_id "
+                        + " inner join sys.schemas on procedures.schema_id = schemas.schema_id"
+                        + " where procedures.name = '{0}' and schemas.name = '{1}'";
+                using (SqlCommand cmd = new SqlCommand(String.Format(sql, spName, schName), con))
                 {
                     cmd.CommandType = CommandType.Text;
                     using (SqlDataAdapter sda = new SqlDataAdapter(cmd))
@@ -364,7 +379,7 @@ namespace SPEntityGenerator
         {
             var nullable = "True".Equals(item.AllowDBNull);
             var type = Type.GetType(item.DataType);
-
+            var propName = CapitalizeFirstLetter(item.ColumnName);
             SyntaxKind _syntaxKind = ToSyntaxKind(type);
 
             if (_syntaxKind == SyntaxKind.None)
@@ -372,12 +387,12 @@ namespace SPEntityGenerator
                 if (nullable && type.IsValueType)
                 {
                     return SF.PropertyDeclaration(
-                    SF.NullableType(SF.IdentifierName(type.Name)), SF.Identifier(item.ColumnName));
+                    SF.NullableType(SF.IdentifierName(type.Name)), SF.Identifier(propName));
                 }
                 else
                 {
                     return SF.PropertyDeclaration(
-                    SF.IdentifierName(type.Name), SF.Identifier(item.ColumnName));
+                    SF.IdentifierName(type.Name), SF.Identifier(propName));
                 }
             }
             else
@@ -385,13 +400,13 @@ namespace SPEntityGenerator
                 if (nullable && type.IsValueType)
                 {
                     return SF.PropertyDeclaration(
-                    SF.NullableType(SF.PredefinedType(SF.Token(_syntaxKind))), SF.Identifier(item.ColumnName)
+                    SF.NullableType(SF.PredefinedType(SF.Token(_syntaxKind))), SF.Identifier(propName)
                     );
                 }
                 else
                 {
                     return SF.PropertyDeclaration(
-                    SF.PredefinedType(SF.Token(_syntaxKind)), SF.Identifier(item.ColumnName));
+                    SF.PredefinedType(SF.Token(_syntaxKind)), SF.Identifier(propName));
                 }
             }
 
@@ -641,6 +656,7 @@ namespace SPEntityGenerator
             txt_ClassName.Visible = true;
             label_Namespace.Visible = true;
             txt_Namespace.Visible = true;
+            btnGenerate.Enabled = true;
         }
 
         private void HideParamaterGrid()
@@ -654,5 +670,40 @@ namespace SPEntityGenerator
             btnGenerate.Enabled = false;
         }
         #endregion
+
+        private void btnPull_Click(object sender, EventArgs e)
+        {
+            if (String.IsNullOrEmpty(txtStoreProc.Text))
+            {
+                MessageBox.Show("Specific Stored Procedure name is required.");
+                return;
+            }
+            if (String.IsNullOrEmpty(txtConnectionString.Text))
+            {
+                MessageBox.Show("Connection string is required.");
+                return;
+            }
+            if (txtStoreProc.Text.IndexOf(".") < 0)
+            {
+                MessageBox.Show("Specific Stored Procedure name is invalid. \nPlease follow <schema>.<storedprocedure> \nExp: dbo.AuditEntry!");
+                return;
+            }
+            _connection = txtConnectionString.Text;
+            try
+            {
+                var st = txtStoreProc.Text.Split('.');
+                var sp_Name = st[1];
+                var sch_Name = st[0];
+                _classname = CapitalizeFirstLetter(sp_Name);
+                BindParametterGrid(sp_Name, sch_Name);
+                ShowParamaterGrid();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Something went wrong. \n" + ex.Message);
+                HideParamaterGrid();
+                dataGridView1.DataSource = null;
+            }
+        }
     }
 }

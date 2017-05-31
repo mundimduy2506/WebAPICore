@@ -11,7 +11,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "api/customer",
+      "launchUrl": "api/v1/portfoliotransaction",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -19,7 +19,7 @@
     "WebAPICore": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "api/customer",
+      "launchUrl": "api/v1/portfoliotransaction",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

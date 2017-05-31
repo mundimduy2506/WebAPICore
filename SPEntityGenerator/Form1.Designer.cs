@@ -45,6 +45,9 @@
             this.label3 = new System.Windows.Forms.Label();
             this.txt_Namespace = new System.Windows.Forms.TextBox();
             this.label_Namespace = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.txtStoreProc = new System.Windows.Forms.TextBox();
+            this.btnPull = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
             this.SuspendLayout();
@@ -65,7 +68,7 @@
             this.dataGridView1.AllowUserToAddRows = false;
             this.dataGridView1.AllowUserToDeleteRows = false;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(8, 168);
+            this.dataGridView1.Location = new System.Drawing.Point(8, 195);
             this.dataGridView1.Margin = new System.Windows.Forms.Padding(2);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowTemplate.Height = 28;
@@ -146,7 +149,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(5, 153);
+            this.label2.Location = new System.Drawing.Point(5, 180);
             this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(98, 13);
@@ -201,11 +204,40 @@
             this.label_Namespace.TabIndex = 13;
             this.label_Namespace.Text = "Namespace:";
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(8, 142);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(107, 13);
+            this.label4.TabIndex = 15;
+            this.label4.Text = "Specific Stored Proc:";
+            // 
+            // txtStoreProc
+            // 
+            this.txtStoreProc.Location = new System.Drawing.Point(122, 142);
+            this.txtStoreProc.Name = "txtStoreProc";
+            this.txtStoreProc.Size = new System.Drawing.Size(384, 20);
+            this.txtStoreProc.TabIndex = 16;
+            // 
+            // btnPull
+            // 
+            this.btnPull.Location = new System.Drawing.Point(522, 142);
+            this.btnPull.Name = "btnPull";
+            this.btnPull.Size = new System.Drawing.Size(75, 23);
+            this.btnPull.TabIndex = 17;
+            this.btnPull.Text = "Pull";
+            this.btnPull.UseVisualStyleBackColor = true;
+            this.btnPull.Click += new System.EventHandler(this.btnPull_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(904, 727);
+            this.Controls.Add(this.btnPull);
+            this.Controls.Add(this.txtStoreProc);
+            this.Controls.Add(this.label4);
             this.Controls.Add(this.txt_Namespace);
             this.Controls.Add(this.label_Namespace);
             this.Controls.Add(this.label3);
@@ -251,6 +283,9 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox txt_Namespace;
         private System.Windows.Forms.Label label_Namespace;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox txtStoreProc;
+        private System.Windows.Forms.Button btnPull;
     }
 }
 

@@ -8,6 +8,7 @@ namespace WebAPICore.Models
     {
         public virtual DbSet<Customer> Customer { get; set; }
         public virtual DbSet<CustomerReport> CustomerReport { get; set; }
+        public virtual DbSet<TransactionDetails> TransactionDetails { get; set; }
 
         public WebAPIContext(DbContextOptions<WebAPIContext> options)
     : base(options)
@@ -22,6 +23,9 @@ namespace WebAPICore.Models
 
                 entity.Property(e => e.Name).HasMaxLength(50);
             });
+
+            modelBuilder.Entity<TransactionDetails>()
+            .HasKey(c => c.TransactionsID);
         }
     }
 }
