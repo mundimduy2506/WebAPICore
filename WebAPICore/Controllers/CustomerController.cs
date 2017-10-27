@@ -22,7 +22,7 @@ namespace WebAPICore.Controllers
 
         // GET: api/customer/{frDate}/
         /// <summary>
-        /// Retrieves a list of customers having enrolled date after entered date
+        /// duyTran - Retrieves a list of customers having enrolled date after entered date
         /// </summary>
         /// <param name="pageSize">Page size</param>
         /// <param name="pageNumber">Page number</param>
