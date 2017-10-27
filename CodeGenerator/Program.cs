@@ -3,15 +3,10 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.IO;
-using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.CodeAnalysis.Editing;
 using System.Text;
-using Microsoft.CodeAnalysis.CSharp.Formatting;
 using Microsoft.CodeAnalysis.Formatting;
-using System.Reflection.Metadata;
-using Roslyn.Utilities;
-using Microsoft.CodeAnalysis.LanguageServices;
 using System.Collections.Generic;
 using SF = Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using Microsoft.CodeAnalysis.Options;
@@ -42,7 +37,7 @@ namespace CodeGenerator
             SF.NullableType(
                 SF.PredefinedType(
                     SF.Token(SyntaxKind.IntKeyword))),
-            SF.Identifier("MyProperty"))
+            SF.Identifier("MyProperty")) //for multiple props, use loop
                 .AddModifiers(SF.Token(SyntaxKind.PublicKeyword));
             // Add a getter
             @property = @property.AddAccessorListAccessors(

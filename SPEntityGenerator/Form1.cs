@@ -156,7 +156,7 @@ namespace SPEntityGenerator
                         }
                         else
                         {
-                            MessageBox.Show("All parameter fields and class name are required.");
+                            MessageBox.Show("All parameter fields are required.");
                             isValidInput = false;
                             break;
                         }
@@ -673,9 +673,17 @@ namespace SPEntityGenerator
 
         private void btnPull_Click(object sender, EventArgs e)
         {
+            var checkedButton = groupBox1.Controls.OfType<RadioButton>()
+                                      .FirstOrDefault(r => r.Checked);
+            if (checkedButton == null)
+            {
+                MessageBox.Show("SQL Type is required.");
+                return;
+            }
+            //radButtonSP
             if (String.IsNullOrEmpty(txtStoreProc.Text))
             {
-                MessageBox.Show("Specific Stored Procedure name is required.");
+                MessageBox.Show("Specific SQL name is required.");
                 return;
             }
             if (String.IsNullOrEmpty(txtConnectionString.Text))
@@ -685,18 +693,57 @@ namespace SPEntityGenerator
             }
             if (txtStoreProc.Text.IndexOf(".") < 0)
             {
-                MessageBox.Show("Specific Stored Procedure name is invalid. \nPlease follow <schema>.<storedprocedure> \nExp: dbo.AuditEntry!");
+                MessageBox.Show("Specific SQL name is invalid. \nPlease follow <schema>.<storedprocedure> \nExp: dbo.AuditEntry!");
                 return;
             }
             _connection = txtConnectionString.Text;
             try
             {
-                var st = txtStoreProc.Text.Split('.');
-                var sp_Name = st[1];
-                var sch_Name = st[0];
+                Cursor.Current = Cursors.WaitCursor;
+                char[] arr = txtStoreProc.Text.Where(c => (char.IsLetterOrDigit(c) ||
+                             c == '.' || c == '_')).ToArray();
+
+                var viewName = new string(arr).Split('.');
+                var sp_Name = viewName[1];
+                var sch_Name = viewName[0];
                 _classname = CapitalizeFirstLetter(sp_Name);
-                BindParametterGrid(sp_Name, sch_Name);
-                ShowParamaterGrid();
+                if ("radButtonSP".Equals(checkedButton.Name))
+                {
+                    BindParametterGrid(sp_Name, sch_Name);
+                    ShowParamaterGrid();
+                }
+                else
+                {
+                    SqlConnection cn = new SqlConnection();
+                    SqlCommand cmd = new SqlCommand();
+                    cn.ConnectionString = _connection;
+                    cn.Open();
+                    cmd = cn.CreateCommand();
+                    var sql = String.Format($"select * from {txtStoreProc.Text}");
+
+                    var rs = DBExtension.DynamicDataFromSql(cmd, sql, new Dictionary<string, object>());
+                    List<EntityBase> listProp = new List<EntityBase>();
+                    if (rs != null)
+                    {
+                        foreach (DataRow myField in rs.Rows)
+                        {
+                            var dataRow = new ExpandoObject() as IDictionary<string, object>;
+                            foreach (DataColumn myProperty in rs.Columns)
+                            {
+                                var column = CapitalizeFirstLetter(myProperty.ColumnName.Trim());
+                                dataRow.Add(myProperty.ColumnName.Trim(), myField[myProperty].ToString());
+                            }
+                            listProp.Add(new MapperConfiguration(cfg => { }).CreateMapper().Map<EntityBase>(dataRow));
+                        }
+                        GenerateRoslynClassNew(listProp);
+                        MessageBox.Show("Class is generated.");
+                    }
+                    else
+                    {
+                        MessageBox.Show("No schema found.");
+                    }
+                    HideParamaterGrid();
+                }
             }
             catch (Exception ex)
             {

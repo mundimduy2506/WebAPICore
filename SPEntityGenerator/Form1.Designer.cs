@@ -48,8 +48,14 @@
             this.label4 = new System.Windows.Forms.Label();
             this.txtStoreProc = new System.Windows.Forms.TextBox();
             this.btnPull = new System.Windows.Forms.Button();
+            this.radButtonSP = new System.Windows.Forms.RadioButton();
+            this.radButtonView = new System.Windows.Forms.RadioButton();
+            this.splitter1 = new System.Windows.Forms.Splitter();
+            this.label5 = new System.Windows.Forms.Label();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnGenerate
@@ -68,11 +74,11 @@
             this.dataGridView1.AllowUserToAddRows = false;
             this.dataGridView1.AllowUserToDeleteRows = false;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(8, 195);
+            this.dataGridView1.Location = new System.Drawing.Point(8, 158);
             this.dataGridView1.Margin = new System.Windows.Forms.Padding(2);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowTemplate.Height = 28;
-            this.dataGridView1.Size = new System.Drawing.Size(888, 199);
+            this.dataGridView1.Size = new System.Drawing.Size(888, 152);
             this.dataGridView1.TabIndex = 1;
             this.dataGridView1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridView1_CellClick);
             // 
@@ -87,10 +93,10 @@
             // 
             // btnLoad
             // 
-            this.btnLoad.Location = new System.Drawing.Point(803, 24);
+            this.btnLoad.Location = new System.Drawing.Point(803, 67);
             this.btnLoad.Margin = new System.Windows.Forms.Padding(2);
             this.btnLoad.Name = "btnLoad";
-            this.btnLoad.Size = new System.Drawing.Size(67, 21);
+            this.btnLoad.Size = new System.Drawing.Size(67, 23);
             this.btnLoad.TabIndex = 3;
             this.btnLoad.Text = "Load SP";
             this.btnLoad.UseVisualStyleBackColor = true;
@@ -111,17 +117,17 @@
             this.dataGridView2.AllowUserToAddRows = false;
             this.dataGridView2.AllowUserToDeleteRows = false;
             this.dataGridView2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView2.Location = new System.Drawing.Point(8, 424);
+            this.dataGridView2.Location = new System.Drawing.Point(8, 487);
             this.dataGridView2.Margin = new System.Windows.Forms.Padding(2);
             this.dataGridView2.Name = "dataGridView2";
             this.dataGridView2.RowTemplate.Height = 28;
-            this.dataGridView2.Size = new System.Drawing.Size(888, 198);
+            this.dataGridView2.Size = new System.Drawing.Size(888, 183);
             this.dataGridView2.TabIndex = 5;
             // 
             // label_Parameter
             // 
             this.label_Parameter.AutoSize = true;
-            this.label_Parameter.Location = new System.Drawing.Point(5, 409);
+            this.label_Parameter.Location = new System.Drawing.Point(5, 472);
             this.label_Parameter.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label_Parameter.Name = "label_Parameter";
             this.label_Parameter.Size = new System.Drawing.Size(60, 13);
@@ -131,7 +137,7 @@
             // label_ClassName
             // 
             this.label_ClassName.AutoSize = true;
-            this.label_ClassName.Location = new System.Drawing.Point(9, 667);
+            this.label_ClassName.Location = new System.Drawing.Point(292, 421);
             this.label_ClassName.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label_ClassName.Name = "label_ClassName";
             this.label_ClassName.Size = new System.Drawing.Size(66, 13);
@@ -140,16 +146,16 @@
             // 
             // txt_ClassName
             // 
-            this.txt_ClassName.Location = new System.Drawing.Point(79, 667);
+            this.txt_ClassName.Location = new System.Drawing.Point(295, 436);
             this.txt_ClassName.Margin = new System.Windows.Forms.Padding(2);
             this.txt_ClassName.Name = "txt_ClassName";
-            this.txt_ClassName.Size = new System.Drawing.Size(260, 20);
+            this.txt_ClassName.Size = new System.Drawing.Size(245, 20);
             this.txt_ClassName.TabIndex = 8;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(5, 180);
+            this.label2.Location = new System.Drawing.Point(5, 143);
             this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(98, 13);
@@ -158,10 +164,10 @@
             // 
             // btn_Browse
             // 
-            this.btn_Browse.Location = new System.Drawing.Point(803, 105);
+            this.btn_Browse.Location = new System.Drawing.Point(803, 103);
             this.btn_Browse.Margin = new System.Windows.Forms.Padding(2);
             this.btn_Browse.Name = "btn_Browse";
-            this.btn_Browse.Size = new System.Drawing.Size(67, 19);
+            this.btn_Browse.Size = new System.Drawing.Size(67, 22);
             this.btn_Browse.TabIndex = 10;
             this.btn_Browse.Text = "Browse";
             this.btn_Browse.UseVisualStyleBackColor = true;
@@ -188,16 +194,16 @@
             // 
             // txt_Namespace
             // 
-            this.txt_Namespace.Location = new System.Drawing.Point(79, 637);
+            this.txt_Namespace.Location = new System.Drawing.Point(8, 436);
             this.txt_Namespace.Margin = new System.Windows.Forms.Padding(2);
             this.txt_Namespace.Name = "txt_Namespace";
-            this.txt_Namespace.Size = new System.Drawing.Size(260, 20);
+            this.txt_Namespace.Size = new System.Drawing.Size(245, 20);
             this.txt_Namespace.TabIndex = 14;
             // 
             // label_Namespace
             // 
             this.label_Namespace.AutoSize = true;
-            this.label_Namespace.Location = new System.Drawing.Point(8, 637);
+            this.label_Namespace.Location = new System.Drawing.Point(5, 420);
             this.label_Namespace.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label_Namespace.Name = "label_Namespace";
             this.label_Namespace.Size = new System.Drawing.Size(67, 13);
@@ -207,34 +213,87 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(8, 142);
+            this.label4.Location = new System.Drawing.Point(5, 335);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(107, 13);
+            this.label4.Size = new System.Drawing.Size(99, 13);
             this.label4.TabIndex = 15;
-            this.label4.Text = "Specific Stored Proc:";
+            this.label4.Text = "Particular Retrieval:";
             // 
             // txtStoreProc
             // 
-            this.txtStoreProc.Location = new System.Drawing.Point(122, 142);
+            this.txtStoreProc.Location = new System.Drawing.Point(168, 358);
             this.txtStoreProc.Name = "txtStoreProc";
-            this.txtStoreProc.Size = new System.Drawing.Size(384, 20);
+            this.txtStoreProc.Size = new System.Drawing.Size(286, 20);
             this.txtStoreProc.TabIndex = 16;
             // 
             // btnPull
             // 
-            this.btnPull.Location = new System.Drawing.Point(522, 142);
+            this.btnPull.Location = new System.Drawing.Point(168, 384);
             this.btnPull.Name = "btnPull";
-            this.btnPull.Size = new System.Drawing.Size(75, 23);
+            this.btnPull.Size = new System.Drawing.Size(62, 23);
             this.btnPull.TabIndex = 17;
             this.btnPull.Text = "Pull";
             this.btnPull.UseVisualStyleBackColor = true;
             this.btnPull.Click += new System.EventHandler(this.btnPull_Click);
+            // 
+            // radButtonSP
+            // 
+            this.radButtonSP.AutoSize = true;
+            this.radButtonSP.Location = new System.Drawing.Point(9, 19);
+            this.radButtonSP.Name = "radButtonSP";
+            this.radButtonSP.Size = new System.Drawing.Size(108, 17);
+            this.radButtonSP.TabIndex = 19;
+            this.radButtonSP.TabStop = true;
+            this.radButtonSP.Text = "Stored Procedure";
+            this.radButtonSP.UseVisualStyleBackColor = true;
+            // 
+            // radButtonView
+            // 
+            this.radButtonView.AutoSize = true;
+            this.radButtonView.Location = new System.Drawing.Point(9, 42);
+            this.radButtonView.Name = "radButtonView";
+            this.radButtonView.Size = new System.Drawing.Size(48, 17);
+            this.radButtonView.TabIndex = 20;
+            this.radButtonView.TabStop = true;
+            this.radButtonView.Text = "View";
+            this.radButtonView.UseVisualStyleBackColor = true;
+            // 
+            // splitter1
+            // 
+            this.splitter1.Location = new System.Drawing.Point(0, 0);
+            this.splitter1.Name = "splitter1";
+            this.splitter1.Size = new System.Drawing.Size(3, 727);
+            this.splitter1.TabIndex = 21;
+            this.splitter1.TabStop = false;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(302, 322);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(299, 13);
+            this.label5.TabIndex = 22;
+            this.label5.Text = "========================*========================";
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.radButtonSP);
+            this.groupBox1.Controls.Add(this.radButtonView);
+            this.groupBox1.Location = new System.Drawing.Point(18, 351);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(144, 64);
+            this.groupBox1.TabIndex = 23;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "SQL Type";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(904, 727);
+            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.splitter1);
             this.Controls.Add(this.btnPull);
             this.Controls.Add(this.txtStoreProc);
             this.Controls.Add(this.label4);
@@ -260,6 +319,8 @@
             this.TransparencyKey = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).EndInit();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -286,6 +347,11 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox txtStoreProc;
         private System.Windows.Forms.Button btnPull;
+        private System.Windows.Forms.RadioButton radButtonSP;
+        private System.Windows.Forms.RadioButton radButtonView;
+        private System.Windows.Forms.Splitter splitter1;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.GroupBox groupBox1;
     }
 }
 

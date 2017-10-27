@@ -10,6 +10,9 @@ using Microsoft.Extensions.Logging;
 using WebAPICore.Models;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Swagger;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using WebAPICore.Swagger;
+using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPICore
 {
@@ -33,6 +36,7 @@ namespace WebAPICore
         {
             // Add framework services.
             services.AddMvc();
+            //services.AddApiVersioning();
             //Add DI for EF
             var connection = @"Data Source=LT-00005495\SQLEXPRESS;Initial Catalog=WebAPI;Persist Security Info=True;User ID=sa;Password=Abcde12345-;";
             var connection2 = @"Data Source=Seimdbdevdb2014;Initial Catalog=NETIKIP;User ID=netikapp_user;Password=netik;";
@@ -45,6 +49,18 @@ namespace WebAPICore
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
+                c.SwaggerDoc("v2", new Info { Title = "My API", Version = "v2" });
+                //c.DocInclusionPredicate((docName, apiDesc) =>
+                //{
+                    //var versions = apiDesc.ControllerAttributes()
+                    //    .OfType<ApiVersionAttribute>()
+                    //    .SelectMany(attr => attr.Versions);
+
+                    //return versions.Any(v => $"v{v.ToString()}" == docName);
+                //});
+
+                c.OperationFilter<RemoveVersionParameters>();
+                c.DocumentFilter<SetVersionInPaths>();
             });
         }
 
@@ -60,6 +76,7 @@ namespace WebAPICore
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                c.SwaggerEndpoint("/swagger/v2/swagger.json", "My API V2");
             });
             app.UseMvc();
         }
